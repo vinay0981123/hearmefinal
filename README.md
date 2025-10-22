@@ -1,0 +1,47 @@
+Install system deps:
+
+Ubuntu: sudo apt-get update && sudo apt-get install -y ffmpeg git build-essential
+
+Python:
+
+pyenv global 3.10.12 or system Python 3.10.12
+
+python -m venv .venv && source .venv/bin/activate
+
+pip install -U pip
+
+pip install -r requirements.txt
+
+Hugging Face:
+
+Get HF token and accept pyannote community pipeline terms, add to .env as HF_TOKEN.​
+
+Run:
+
+bash run.sh
+
+Test:
+
+curl -X POST http://localhost:8000/api/v1/transcribe -H "Content-Type: application/json" -d '{"url":"https://betcha.s3.us-east-2.amazonaws.com/audio-4.mp3"}'
+
+Response:
+
+JSON includes segments with speaker labels, stable User mapping, and a human‑readable transcript lines “User N said: …”.​
+
+Usage example
+Request:
+
+POST /api/v1/transcribe with body: { "url": "https://betcha.s3.us-east-2.amazonaws.com/audio-4.mp3" }​
+
+Response:
+
+transcript: plain text lines like “User 1 said: …” joined by newlines; mapping ensures same voice remains same User ID across the file.​
+
+Notes and options
+Speaker count: You can pass num_speakers, or min_speakers/max_speakers for better control when audio is known. Leaving blank lets the pipeline infer.​
+
+GPU acceleration: enabled automatically if CUDA is present; faster-whisper compute_type is float16 on GPU and int8 on CPU for speed.​
+
+Model choices: set WHISPER_MODEL to tiny/base/small/medium/large-v3; large-v3 recommended for best accuracy. English-only variants (.en) are faster if language is known.​
+
+Docker: You can wrap this app similarly to common FastAPI + HF examples if deploying to spaces, ECR, or other platforms.​
