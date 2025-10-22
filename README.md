@@ -18,11 +18,11 @@ Get HF token and accept pyannote community pipeline terms, add to .env as HF_TOK
 
 Run:
 
-bash run.sh
+bash uvicorn hearme.app:app --host 0.0.0.0 --port 8000 --reload --log-level info --proxy-headers --forwarded-allow-ips="*"
 
 Test:
 
-curl -X POST http://localhost:8000/api/v1/transcribe -H "Content-Type: application/json" -d '{"url":"https://betcha.s3.us-east-2.amazonaws.com/audio-4.mp3"}'
+curl -X POST http://localhost:8000/api/v1/transcribe   -H "Content-Type: application/json"   -d '{"url":"https://betcha.s3.us-east-2.amazonaws.com/audio-4.mp3"}'
 
 Response:
 
