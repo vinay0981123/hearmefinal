@@ -25,3 +25,5 @@ faster-whisper==1.0.3
 tqdm==4.66.5
 
 aiofiles==23.2.1
+
+hf_transfer

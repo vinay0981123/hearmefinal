@@ -1,10 +1,16 @@
 Install system deps:
 
-Ubuntu: sudo apt-get update && sudo apt-get install -y ffmpeg git build-essential
+Ubuntu: 
+  sudo apt-get update -y
+  sudo apt-get install -y --no-install-recommends \
+    curl git ca-certificates build-essential \
+    libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev \
+    wget llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev \
+    libffi-dev liblzma-dev ffmpeg
 
 Python:
 
-pyenv global 3.10.12 or system Python 3.10.12
+pyenv global 3.10.12 or system Python 3.10.12 #currently this is working on 3.12 also so no need to change version.
 
 python -m venv .venv && source .venv/bin/activate
 
