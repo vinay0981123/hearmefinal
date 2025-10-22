@@ -6,9 +6,9 @@ load_dotenv()
 class Settings:
     HF_TOKEN: str | None = os.getenv("HF_TOKEN")
     WHISPER_MODEL: str = os.getenv("WHISPER_MODEL", "small")
-    DEVICE: str = os.getenv("DEVICE", "auto")
-    NUM_SPEAKERS = os.getenv("NUM_SPEAKERS")
-    MIN_SPEAKERS = os.getenv("MIN_SPEAKERS")
-    MAX_SPEAKERS = os.getenv("MAX_SPEAKERS")
+    DEVICE_RAW: str = os.getenv("DEVICE", "auto")
+    DEVICE: str = DEVICE_RAW.lower()
+    # Optional: allow forcing CPU for CTranslate2 via env
+    CT2_FORCE_CPU: str | None = os.getenv("CT2_FORCE_CPU")
 
 settings = Settings()
