@@ -29,6 +29,7 @@ def _get_model():
     if _model_cache is None:
         device, compute_type = _get_device_and_compute()
         _apply_ct2_env(device)
+        print(f"[STT] WHISPER_MODEL={settings.WHISPER_MODEL}, device={device}, compute_type={compute_type}")
         _model_cache = WhisperModel(
             settings.WHISPER_MODEL,
             device=device,
