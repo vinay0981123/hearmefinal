@@ -1,3 +1,8 @@
+Models being used:
+pyannote/speaker-diarization-3.1 --> for diarization
+openai/whisper-large-v3  --> for stt
+
+
 Install system deps:
 
 Ubuntu: 
