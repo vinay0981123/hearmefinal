@@ -35,6 +35,7 @@ def _get_model():
             device=device,
             compute_type=compute_type
         )
+        print(f"[STT] model ready name={settings.WHISPER_MODEL}")
     return _model_cache
 
 async def transcribe_segments(wav_path: str, language: str | None = None):

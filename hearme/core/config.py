@@ -12,3 +12,4 @@ class Settings:
     CT2_FORCE_CPU: str | None = os.getenv("CT2_FORCE_CPU")
 
 settings = Settings()
+print(f"[CFG] WHISPER_MODEL={settings.WHISPER_MODEL}, DEVICE={settings.DEVICE}, CT2_FORCE_CPU={settings.CT2_FORCE_CPU}")
