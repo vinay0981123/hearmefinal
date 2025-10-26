@@ -68,3 +68,32 @@ async def transcribe(body: TranscribeBody):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+        
+from typing import List
+from pydantic import Field, AnyHttpUrl
+from hearme.core.batch_runner import process_many  # ensure file exists at hearme/core/batch_runner.py
+
+class BatchBody(BaseModel):
+    urls: List[AnyHttpUrl] = Field(
+        default=[
+            "https://betcha.s3.us-east-2.amazonaws.com/audio-4.mp3",
+            "https://betcha.s3.us-east-2.amazonaws.com/audio-4.mp3"
+        ],
+        description="List of publicly accessible audio URLs"
+    )
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "urls": [
+                    "https://betcha.s3.us-east-2.amazonaws.com/audio-4.mp3",
+                    "https://betcha.s3.us-east-2.amazonaws.com/audio-4.mp3"
+                ]
+            }
+        }
+
+@router.post("/transcribe_batch")
+async def transcribe_batch(body: BatchBody):
+    results = await process_many([str(u) for u in body.urls])
+    return {"results": results}

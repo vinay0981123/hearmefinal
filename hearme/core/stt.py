@@ -48,7 +48,6 @@ async def transcribe_segments(wav_path: str, language: str | None = None):
         beam_size=1,
         temperature=0, 
         chunk_length=60,
-        batch_size=16
     )
     out_segments = []
     for seg in segments:
