@@ -1,46 +1,59 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, AnyHttpUrl
-from hearme.core.config import settings
+from pydantic import BaseModel, AnyHttpUrl, Field
+from typing import Optional
+
 from hearme.core.audio import fetch_and_prepare_audio
 from hearme.core.stt import transcribe_segments
 from hearme.core.diarize import diarize_audio_with_embeddings
 from hearme.core.align import align_words_to_speakers
 from hearme.core.mapping import build_stable_user_map
 
-
 router = APIRouter()
 
 class TranscribeBody(BaseModel):
-    url: AnyHttpUrl
-    num_speakers: int | None = None
-    min_speakers: int | None = None
-    max_speakers: int | None = None
-    language: str | None = None
+    url: AnyHttpUrl = Field(
+        default="https://betcha.s3.us-east-2.amazonaws.com/audio-4.mp3",
+        description="Publicly accessible audio URL"
+    )
+    language: Optional[str] = Field(
+        default="en",
+        description="Language code to force decoding (e.g., 'en')."
+    )
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "url": "https://betcha.s3.us-east-2.amazonaws.com/audio-4.mp3",
+                "language": "en"
+            }
+        }
 
 @router.get("/health")
 async def health():
     return {"status": "ok"}
 
-
-import logging
-logger = logging.getLogger("hearme")
-
-
 @router.post("/transcribe")
 async def transcribe(body: TranscribeBody):
     try:
+        # 1) Fetch + prepare audio
         wav_path, sr = await fetch_and_prepare_audio(str(body.url))
+
+        # 2) Diarization (auto-infer speakers; removed num/min/max)
         diar, spk_embeds = await diarize_audio_with_embeddings(
-            wav_path,
-            sr,
-            num_speakers=body.num_speakers,
-            min_speakers=body.min_speakers,
-            max_speakers=body.max_speakers
+            wav_path=wav_path,
+            sample_rate=sr,
+            num_speakers=None,
+            min_speakers=None,
+            max_speakers=None,
         )
+
+        # 3) ASR with defaulted language "en"
         stt_result = await transcribe_segments(
             wav_path,
-            language=body.language
+            language=body.language,  # defaults to "en"
         )
+
+        # 4) Align + response
         items, speaker_turns = align_words_to_speakers(stt_result, diar)
         user_map = build_stable_user_map(speaker_turns, spk_embeds)
         lines = []
@@ -51,7 +64,7 @@ async def transcribe(body: TranscribeBody):
         return {
             "segments": speaker_turns,
             "mapping": user_map,
-            "transcript": "\n".join(lines)
+            "transcript": "\n".join(lines),
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
