@@ -20,7 +20,7 @@ def _get_pipeline():
         )
         device = torch.device("cuda") if _gpu_enabled() else torch.device("cpu")
         _pipeline_cache = _pipeline_cache.to(device)
-        print(f"[DIAR] device={device}, param_device={next(_pipeline_cache.model.parameters()).device}")
+        print(f"[DIAR] device={device}")
 
     return _pipeline_cache
 
